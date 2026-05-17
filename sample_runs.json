@@ -1,0 +1,17 @@
+[
+  {"run_id": "ci-101", "branch": "main", "service": "portfolio-api", "status": "passed", "duration_min": 18.4, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null},
+  {"run_id": "ci-102", "branch": "feature/tax-slip", "service": "web-app", "status": "failed", "duration_min": 31.2, "retries": 1, "rollback": false, "failure_stage": "e2e", "retry_stage": "e2e"},
+  {"run_id": "ci-103", "branch": "main", "service": "portfolio-api", "status": "passed", "duration_min": 19.1, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null},
+  {"run_id": "ci-104", "branch": "feature/cash-flow", "service": "cash-service", "status": "passed", "duration_min": 44.6, "retries": 2, "rollback": false, "failure_stage": null, "retry_stage": "integration"},
+  {"run_id": "ci-105", "branch": "main", "service": "web-app", "status": "failed", "duration_min": 28.0, "retries": 2, "rollback": true, "failure_stage": "e2e", "retry_stage": "e2e"},
+  {"run_id": "ci-106", "branch": "feature/mobile-auth", "service": "auth-service", "status": "passed", "duration_min": 16.2, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null},
+  {"run_id": "ci-107", "branch": "main", "service": "cash-service", "status": "failed", "duration_min": 52.5, "retries": 3, "rollback": false, "failure_stage": "integration", "retry_stage": "integration"},
+  {"run_id": "ci-108", "branch": "feature/mobile-auth", "service": "auth-service", "status": "passed", "duration_min": 17.5, "retries": 1, "rollback": false, "failure_stage": null, "retry_stage": "unit"},
+  {"run_id": "ci-109", "branch": "main", "service": "web-app", "status": "passed", "duration_min": 26.9, "retries": 1, "rollback": false, "failure_stage": null, "retry_stage": "e2e"},
+  {"run_id": "ci-110", "branch": "feature/rebalancing", "service": "portfolio-api", "status": "passed", "duration_min": 21.4, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null},
+  {"run_id": "ci-111", "branch": "main", "service": "cash-service", "status": "passed", "duration_min": 49.8, "retries": 2, "rollback": false, "failure_stage": null, "retry_stage": "integration"},
+  {"run_id": "ci-112", "branch": "main", "service": "web-app", "status": "failed", "duration_min": 29.7, "retries": 2, "rollback": false, "failure_stage": "e2e", "retry_stage": "e2e"},
+  {"run_id": "ci-113", "branch": "main", "service": "auth-service", "status": "passed", "duration_min": 15.8, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null},
+  {"run_id": "ci-114", "branch": "feature/joint-account", "service": "portfolio-api", "status": "failed", "duration_min": 22.1, "retries": 1, "rollback": false, "failure_stage": "unit", "retry_stage": "unit"},
+  {"run_id": "ci-115", "branch": "main", "service": "portfolio-api", "status": "passed", "duration_min": 20.3, "retries": 0, "rollback": false, "failure_stage": null, "retry_stage": null}
+]
