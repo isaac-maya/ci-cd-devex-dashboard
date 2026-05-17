@@ -1,5 +1,7 @@
 # Wealthsimple CI/CD Developer Experience Dashboard
 
+🌐 **Live demo:** https://isaac-maya.github.io/ci-cd-devex-dashboard/
+
 A lightweight platform-engineering sample for Wealthsimple's CI/CD and Developer Experience work. It turns synthetic pipeline history into two distinct readouts that platform teams actually need: **release confidence** (main branch) and **developer experience** (all runs). The per-service breakdown makes ownership gaps visible in a single table.
 
 ## Run
