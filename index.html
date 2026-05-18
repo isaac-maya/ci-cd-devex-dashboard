@@ -1,488 +1,270 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CI/CD Release Readiness — Wealthsimple</title>
-<style>
-  :root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --ink: #0f172a;
-    --ink-soft: #475569;
-    --muted: #94a3b8;
-    --border: #e2e8f0;
-    --good: #16a34a;
-    --good-bg: #dcfce7;
-    --warn: #f59e0b;
-    --warn-bg: #fef3c7;
-    --bad: #dc2626;
-    --bad-bg: #fee2e2;
-    --accent: #2563eb;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.4;
-  }
-  .wrap {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 32px 24px 80px;
-  }
-  header { margin-bottom: 20px; }
-  .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  h1 { font-size: 22px; margin: 4px 0 0; font-weight: 600; }
-  .scenarios {
-    display: flex;
-    gap: 8px;
-    margin: 16px 0 20px;
-    flex-wrap: wrap;
-  }
-  .scenarios button {
-    border: 1px solid var(--border);
-    background: var(--card);
-    padding: 8px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--ink-soft);
-    transition: all 0.15s ease;
-  }
-  .scenarios button:hover { border-color: var(--ink-soft); }
-  .scenarios button.active {
-    background: var(--ink);
-    color: #fff;
-    border-color: var(--ink);
-  }
-  .hero {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px 28px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 6px;
-    background: var(--risk-color, var(--muted));
-  }
-  .hero-status {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-  .hero-risk {
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--risk-color, var(--ink));
-  }
-  .hero-sub {
-    font-size: 14px;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--risk-bg, var(--bg));
-    color: var(--risk-color, var(--ink));
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .kpis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .kpi {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .kpi-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .kpi-value {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-top: 4px;
-    line-height: 1.1;
-  }
-  .kpi-sub {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-top: 2px;
-  }
-  .panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }
-  .panel h2 {
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ink-soft);
-    margin: 0 0 14px;
-    font-weight: 600;
-  }
-  table.services {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  table.services th {
-    text-align: left;
-    font-weight: 500;
-    color: var(--muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 8px 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  table.services td {
-    padding: 12px 8px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-  table.services tr:last-child td { border-bottom: none; }
-  .svc-name {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 13px;
-    color: var(--ink);
-  }
-  .bar-cell { width: 30%; min-width: 120px; }
-  .bar {
-    background: var(--border);
-    border-radius: 6px;
-    height: 8px;
-    overflow: hidden;
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 6px;
-    transition: width 0.4s ease;
-  }
-  .bar-label {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge.good { background: var(--good-bg); color: var(--good); }
-  .badge.warn { background: var(--warn-bg); color: #92400e; }
-  .badge.bad { background: var(--bad-bg); color: var(--bad); }
-  .rollback-cell { font-variant-numeric: tabular-nums; }
-  .actions {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .actions li {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--ink);
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-  .actions li:last-child { border-bottom: none; }
-  .actions .dot {
-    flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--risk-color, var(--accent));
-    margin-top: 6px;
-  }
-  .meta {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-  .meta a { color: var(--accent); text-decoration: none; font-weight: 500; }
-  .meta a:hover { text-decoration: underline; }
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  @media (max-width: 700px) {
-    .two-col { grid-template-columns: 1fr; }
-    .hero { flex-direction: column; align-items: flex-start; }
-    .hero-risk { font-size: 28px; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CI/CD Release Confidence Brief</title>
+  <style>
+    :root {
+      --paper: #fcfbf7;
+      --ink: #161616;
+      --muted: #667085;
+      --line: #d0d5dd;
+      --panel: #ffffff;
+      --accent: #b42318;
+      --accent-bg: #fef3f2;
+      --link: #175cd3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      max-width: 760px;
+      margin-top: 12px;
+      color: #344054;
+      font-size: 15px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 18px;
+    }
+    .decision {
+      border-left: 5px solid var(--accent);
+      background: var(--accent-bg);
+    }
+    .decision-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .decision-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .metric-note {
+      font-size: 12px;
+      color: #475467;
+      margin-top: 4px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    li + li {
+      margin-top: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    code {
+      font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+      font-size: 12px;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .scope {
+      color: #475467;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Release readiness · Wealthsimple deploy window</div>
-    <h1>CI/CD Health Dashboard</h1>
-  </header>
+  <main class="wrap">
+    <div class="eyebrow">Public Demo · CI/CD · Developer Experience</div>
+    <h1>CI/CD Release Confidence Brief</h1>
+    <p class="subtitle">A compact platform-engineering sample that separates release confidence on <code>main</code> from developer friction across all runs, then turns that split into an ownership and release-decision artifact.</p>
 
-  <div class="scenarios" id="scenarios"></div>
+    <section class="panel decision">
+      <div class="decision-label">Decision Strip</div>
+      <div class="decision-value">Hold</div>
+      <div>Main branch shows rollback exposure plus concentrated `e2e` instability, so the next deploy should be gated on targeted stabilization work.</div>
+    </section>
 
-  <div class="hero" id="hero">
-    <div style="flex:1; min-width: 0;">
-      <div class="hero-status">Release confidence (main branch)</div>
-      <div class="hero-risk" id="hero-risk">—</div>
-      <div class="hero-sub" id="hero-sub">—</div>
-    </div>
-    <div style="text-align: right;">
-      <div class="hero-status">Anchor signal</div>
-      <div style="font-size: 14px; font-weight: 600; color: var(--ink); margin-top: 4px;" id="hero-anchor">—</div>
-    </div>
-  </div>
+    <section class="panel">
+      <h2>Best 30-Second Skim</h2>
+      <ul>
+        <li>Release risk on <code>main</code> is <strong>High</strong> because 56% of runs required retries and the sample window includes 1 rollback.</li>
+        <li>Developer friction risk across all runs is <strong>High</strong>; <code>web-app</code> has the most retry-affected runs (4).</li>
+        <li>The fastest next action is to stabilize <code>e2e</code> on <code>main</code> and make a named owner accountable for <code>web-app</code>.</li>
+      </ul>
+    </section>
 
-  <div class="kpis" id="kpis"></div>
+    <section class="panel">
+      <h2>Headline Metrics</h2>
+      <div class="grid">
+        <div class="metric">
+          <div class="metric-label">Main Branch Risk</div>
+          <div class="metric-value">High</div>
+          <div class="metric-note">9 runs · 56% retries · 1 rollback</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Developer Friction Risk</div>
+          <div class="metric-value">High</div>
+          <div class="metric-note">15 runs · 15 retry events · 302.3 retry-touched minutes</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Failure Concentration</div>
+          <div class="metric-value"><code>e2e</code></div>
+          <div class="metric-note">2 runs on main</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Service To Triage First</div>
+          <div class="metric-value"><code>web-app</code></div>
+          <div class="metric-note">2 failed runs on main</div>
+        </div>
+      </div>
+    </section>
 
-  <div class="two-col">
-    <div class="panel">
-      <h2>Per-service health</h2>
-      <table class="services">
+    <section class="panel">
+      <h2>Developer Friction Tax</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Main branch</th>
+            <th>All runs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Retry-affected runs</td><td>5</td><td>9</td></tr>
+          <tr><td>Retry events</td><td>10</td><td>15</td></tr>
+          <tr><td>Retry-touched minutes</td><td>186.9</td><td>302.3</td></tr>
+          <tr><td>Long-tail duration p90</td><td>50.3 min</td><td>47.7 min</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Per-Service Breakdown</h2>
+      <table>
         <thead>
           <tr>
             <th>Service</th>
-            <th class="bar-cell">Pass rate</th>
-            <th class="bar-cell">Retry rate</th>
-            <th style="text-align:right;">Rollbacks</th>
+            <th>Runs</th>
+            <th>Pass rate</th>
+            <th>Retry rate</th>
+            <th>Median</th>
+            <th>Rollbacks</th>
           </tr>
         </thead>
-        <tbody id="services-body"></tbody>
+        <tbody>
+          <tr><td><code>web-app</code></td><td>4</td><td>25%</td><td>100%</td><td>28.9 min</td><td>1</td></tr>
+<tr><td><code>cash-service</code></td><td>3</td><td>67%</td><td>100%</td><td>49.8 min</td><td>0</td></tr>
+<tr><td><code>portfolio-api</code></td><td>5</td><td>80%</td><td>20%</td><td>20.3 min</td><td>0</td></tr>
+<tr><td><code>auth-service</code></td><td>3</td><td>100%</td><td>33%</td><td>16.2 min</td><td>0</td></tr>
+        </tbody>
       </table>
-    </div>
+    </section>
 
-    <div class="panel">
-      <h2>Recommended actions</h2>
-      <ul class="actions" id="actions"></ul>
-    </div>
-  </div>
+    <section class="panel">
+      <h2>Recommended Actions</h2>
+      <ul>
+        <li>Treat the 1 main-branch rollback as a release-review trigger, not a one-off — capture the contributing CI signal before the next deploy.</li>
+<li>Stabilize the `e2e` stage on main first; that is where deployment confidence is actually being eroded.</li>
+<li>Assign a platform owner for `web-app` — failures are concentrating there and the service-level table makes the gap visible.</li>
+<li>Surface flake rate (passed-with-retries) on the platform dashboard alongside pass rate so devex friction stops being invisible.</li>
+<li>Flag the long-tail duration (50.3 min p90) as a developer-friction incident on main; pass/fail alone hides it.</li>
+      </ul>
+    </section>
 
-  <div class="meta">
-    <span>Synthetic data · Click a scenario above to swap the dataset.</span>
-    <a href="devex_report.md">Full report →</a>
-    <a href="pipeline_health.py">Source →</a>
-    <a href="https://github.com/isaac-maya/ci-cd-devex-dashboard">GitHub →</a>
-  </div>
-</div>
-
-<script>
-const SCENARIOS = {
-  healthy: {
-    label: "Healthy week",
-    risk: "Low",
-    riskColor: "good",
-    anchor: "All services on main branch passing above 90%.",
-    sub: "9 main-branch runs · 0 rollbacks · longest stage 24min p90",
-    kpis: [
-      { label: "Pass rate", value: "93%", sub: "main branch", tone: "good" },
-      { label: "Retry rate", value: "20%", sub: "passed-with-retries", tone: "good" },
-      { label: "P90 duration", value: "24min", sub: "main branch", tone: "good" },
-      { label: "Rollbacks", value: "0", sub: "this window", tone: "good" }
-    ],
-    services: [
-      { name: "auth-service", pass: 1.00, retry: 0.10, rollbacks: 0 },
-      { name: "portfolio-api", pass: 1.00, retry: 0.15, rollbacks: 0 },
-      { name: "cash-service", pass: 0.95, retry: 0.30, rollbacks: 0 },
-      { name: "web-app", pass: 0.90, retry: 0.25, rollbacks: 0 }
-    ],
-    actions: [
-      "No urgent actions. Continue tracking p90 duration as the next priority.",
-      "Spot-check the cash-service retry rate trend over the next week.",
-      "Maintain current rollback-free streak before expanding deploy frequency."
-    ]
-  },
-  current: {
-    label: "Current state",
-    risk: "High",
-    riskColor: "bad",
-    anchor: "web-app at 25% pass / 100% retry / 1 main-branch rollback.",
-    sub: "9 main-branch runs · 1 rollback · longest stage 50min p90",
-    kpis: [
-      { label: "Pass rate", value: "67%", sub: "main branch", tone: "bad" },
-      { label: "Retry rate", value: "56%", sub: "passed-with-retries", tone: "bad" },
-      { label: "P90 duration", value: "50min", sub: "main branch", tone: "warn" },
-      { label: "Rollbacks", value: "1", sub: "this window", tone: "bad" }
-    ],
-    services: [
-      { name: "auth-service", pass: 1.00, retry: 0.33, rollbacks: 0 },
-      { name: "portfolio-api", pass: 0.80, retry: 0.20, rollbacks: 0 },
-      { name: "cash-service", pass: 0.67, retry: 1.00, rollbacks: 0 },
-      { name: "web-app", pass: 0.25, retry: 1.00, rollbacks: 1 }
-    ],
-    actions: [
-      "Stabilize the e2e stage on main first — that is where deployment confidence is being eroded.",
-      "Assign a platform owner for web-app. The per-service table shows the gap clearly.",
-      "Treat the main-branch rollback as a release-review trigger, not a one-off.",
-      "Surface flake rate (passed-with-retries) alongside pass rate so devex friction stops being invisible."
-    ]
-  },
-  catastrophic: {
-    label: "Catastrophic week",
-    risk: "Critical",
-    riskColor: "bad",
-    anchor: "Two services below 40% pass rate. Three main-branch rollbacks.",
-    sub: "10 main-branch runs · 3 rollbacks · longest stage 68min p90",
-    kpis: [
-      { label: "Pass rate", value: "40%", sub: "main branch", tone: "bad" },
-      { label: "Retry rate", value: "80%", sub: "passed-with-retries", tone: "bad" },
-      { label: "P90 duration", value: "68min", sub: "main branch", tone: "bad" },
-      { label: "Rollbacks", value: "3", sub: "this window", tone: "bad" }
-    ],
-    services: [
-      { name: "auth-service", pass: 0.60, retry: 0.60, rollbacks: 1 },
-      { name: "portfolio-api", pass: 0.50, retry: 0.50, rollbacks: 1 },
-      { name: "cash-service", pass: 0.40, retry: 1.00, rollbacks: 0 },
-      { name: "web-app", pass: 0.20, retry: 1.00, rollbacks: 1 }
-    ],
-    actions: [
-      "Halt non-urgent deploys until pass rate on main recovers above 70%.",
-      "Open an incident review across web-app and cash-service simultaneously — the failures are correlated.",
-      "Three rollbacks in one window means the release gate is missing a precondition. Add a contract check.",
-      "Page the platform on-call before further main-branch deploys."
-    ]
-  }
-};
-
-function setRiskTheme(tone) {
-  const root = document.documentElement;
-  const map = {
-    good: { color: "var(--good)", bg: "var(--good-bg)" },
-    warn: { color: "var(--warn)", bg: "var(--warn-bg)" },
-    bad:  { color: "var(--bad)",  bg: "var(--bad-bg)" }
-  };
-  const t = map[tone] || map.warn;
-  root.style.setProperty("--risk-color", t.color);
-  root.style.setProperty("--risk-bg", t.bg);
-}
-
-function svcTone(pass) {
-  if (pass >= 0.85) return "good";
-  if (pass >= 0.60) return "warn";
-  return "bad";
-}
-
-function render(key) {
-  const s = SCENARIOS[key];
-  setRiskTheme(s.riskColor);
-
-  document.getElementById("hero-risk").textContent = s.risk;
-  document.getElementById("hero-sub").textContent = s.sub;
-  document.getElementById("hero-anchor").textContent = s.anchor;
-
-  const kpis = document.getElementById("kpis");
-  kpis.innerHTML = s.kpis.map(k => `
-    <div class="kpi">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-value" style="color: var(--${k.tone === 'good' ? 'good' : k.tone === 'warn' ? 'warn' : 'bad'});">${k.value}</div>
-      <div class="kpi-sub">${k.sub}</div>
-    </div>
-  `).join("");
-
-  const tbody = document.getElementById("services-body");
-  const sorted = [...s.services].sort((a, b) => a.pass - b.pass);
-  tbody.innerHTML = sorted.map(svc => {
-    const passTone = svcTone(svc.pass);
-    const retryTone = svc.retry >= 0.5 ? "bad" : svc.retry >= 0.25 ? "warn" : "good";
-    const passPct = Math.round(svc.pass * 100);
-    const retryPct = Math.round(svc.retry * 100);
-    const passColor = passTone === "good" ? "var(--good)" : passTone === "warn" ? "var(--warn)" : "var(--bad)";
-    const retryColor = retryTone === "good" ? "var(--good)" : retryTone === "warn" ? "var(--warn)" : "var(--bad)";
-    return `
-      <tr>
-        <td><span class="svc-name">${svc.name}</span></td>
-        <td>
-          <div class="bar-label"><span>${passPct}%</span></div>
-          <div class="bar"><div class="bar-fill" style="width:${passPct}%; background:${passColor};"></div></div>
-        </td>
-        <td>
-          <div class="bar-label"><span>${retryPct}%</span></div>
-          <div class="bar"><div class="bar-fill" style="width:${retryPct}%; background:${retryColor};"></div></div>
-        </td>
-        <td style="text-align:right;" class="rollback-cell">
-          ${svc.rollbacks > 0
-            ? `<span class="badge bad">${svc.rollbacks}</span>`
-            : `<span class="badge good">0</span>`}
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  const actions = document.getElementById("actions");
-  actions.innerHTML = s.actions.map(a => `
-    <li><span class="dot"></span><span>${a}</span></li>
-  `).join("");
-}
-
-function buildScenarioButtons() {
-  const container = document.getElementById("scenarios");
-  container.innerHTML = Object.entries(SCENARIOS).map(([key, s]) => `
-    <button data-key="${key}">${s.label}</button>
-  `).join("");
-  container.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      container.querySelectorAll("button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      render(btn.dataset.key);
-    });
-  });
-  const defaultBtn = container.querySelector('[data-key="current"]');
-  if (defaultBtn) defaultBtn.classList.add("active");
-}
-
-buildScenarioButtons();
-render("current");
-</script>
+    <section class="panel">
+      <h2>Inspect Or Run</h2>
+      <div class="links">
+        <a href="./devex_report.md">Open generated report</a>
+        <a href="https://github.com/isaac-maya/ci-cd-devex-dashboard">View source repo</a>
+      </div>
+      <p class="scope">Scope note: this is a synthetic sample, not a claim about Wealthsimple's actual pipeline topology or tooling. The value is in the decision framing, service ownership signals, and the separation between release confidence and developer friction.</p>
+    </section>
+  </main>
 </body>
 </html>
